@@ -1,6 +1,9 @@
 #include <string.h>
+#if defined(__PIC32MX__)
+#else
 #include <avr/io.h>
 #include <avr/pgmspace.h>
+#endif
 #include "sha1.h"
 
 #define SHA1_K0 0x5a827999
@@ -8,7 +11,11 @@
 #define SHA1_K40 0x8f1bbcdc
 #define SHA1_K60 0xca62c1d6
 
+#if defined(__PIC32MX__)
+uint8_t sha1InitState[] = {
+#else
 uint8_t sha1InitState[] PROGMEM = {
+#endif
   0x01,0x23,0x45,0x67, // H0
   0x89,0xab,0xcd,0xef, // H1
   0xfe,0xdc,0xba,0x98, // H2
@@ -17,7 +24,11 @@ uint8_t sha1InitState[] PROGMEM = {
 };
 
 void Sha1Class::init(void) {
+#if defined(__PIC32MX__)
+  memcpy(state.b,sha1InitState,HASH_LENGTH);
+#else
   memcpy_P(state.b,sha1InitState,HASH_LENGTH);
+#endif
   byteCount = 0;
   bufferOffset = 0;
 }
